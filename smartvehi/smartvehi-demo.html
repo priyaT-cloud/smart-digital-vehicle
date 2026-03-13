@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SmartVehi — Smart Vehicle Service Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c18;--surface:#0f1626;--surface2:#161f34;--accent:#00e5b8;--accent2:#ff5f1f;--accent3:#7c5cfc;--gold:#fbbf24;--text:#eef2ff;--muted:#6b7fa3;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--glow:0 0 40px rgba(0,229,184,.2);--r:14px;--r2:20px;--ease:all .3s cubic-bezier(.4,0,.2,1);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}a{color:inherit;text-decoration:none;}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,229,184,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,184,.025) 1px,transparent 1px);background-size:48px 48px;}
+.bg-orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:rgba(0,229,184,.06);top:-150px;right:-100px;}
+.orb2{width:380px;height:380px;background:rgba(124,92,252,.06);bottom:0;left:-80px;}
+.wrap{position:relative;z-index:1;}
+.page{display:none;min-height:100vh;padding:5.5rem 1.5rem 3rem;}
+.page.active{display:block;}
+.page.center{display:none;align-items:center;justify-content:center;}
+.page.center.active{display:flex;}
+.container{max-width:1100px;margin:0 auto;}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;background:rgba(8,12,24,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:var(--accent);}
+.logo span{color:var(--text);}
+.nav-r{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#000;}
+.uname{font-size:.85rem;color:var(--muted);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nbtn{background:none;border:1px solid var(--border2);color:var(--muted);padding:.38rem .9rem;border-radius:8px;font-size:.84rem;cursor:pointer;transition:var(--ease);}
+.nbtn:hover{border-color:var(--accent);color:var(--accent);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:2rem;}
+.card-sm{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;}
+.fg{margin-bottom:1.1rem;}
+.fg label{display:block;font-size:.74rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.42rem;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:.72rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.93rem;transition:var(--ease);}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,184,.07);}
+.fg select option{background:var(--surface);}
+.fg textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:580px){.form-row{grid-template-columns:1fr;}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.78rem 1.7rem;border:none;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.93rem;transition:var(--ease);}
+.btn-primary{background:var(--accent);color:#000;}.btn-primary:hover{background:#00ccaa;transform:translateY(-1px);box-shadow:var(--glow);}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text);}.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:.42rem .88rem;font-size:.82rem;border-radius:8px;}.btn-block{width:100%;}
+.alert{padding:.82rem 1.1rem;border-radius:10px;margin-bottom:1.1rem;font-size:.88rem;}
+.alert-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171;}
+.alert-success{background:rgba(0,229,184,.08);border:1px solid rgba(0,229,184,.2);color:var(--accent);}
+.alert-warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);color:#fbbf24;}
+.badge{display:inline-block;padding:.22rem .7rem;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.05em;}
+.badge-parking{background:rgba(124,92,252,.15);color:#a78bfa;border:1px solid rgba(124,92,252,.25);}
+.badge-washing{background:rgba(0,229,184,.12);color:var(--accent);border:1px solid rgba(0,229,184,.2);}
+.badge-rental{background:rgba(255,95,31,.12);color:var(--accent2);border:1px solid rgba(255,95,31,.2);}
+.badge-confirmed{background:rgba(0,229,184,.1);color:var(--accent);border:1px solid rgba(0,229,184,.18);}
+.badge-taken{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.22);}
+.tabs{display:flex;gap:.45rem;margin-bottom:1.8rem;flex-wrap:wrap;}
+.tab{padding:.52rem 1.1rem;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.87rem;cursor:pointer;transition:var(--ease);}
+.tab:hover{border-color:var(--accent);color:var(--accent);}
+.tab.active{background:rgba(0,229,184,.1);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem;margin-bottom:1.8rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;margin-bottom:.18rem;}
+.stat-lbl{color:var(--muted);font-size:.79rem;}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1.4rem;}
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;transition:var(--ease);}
+.lcard:hover{transform:translateY(-4px);border-color:rgba(0,229,184,.22);box-shadow:0 20px 55px rgba(0,0,0,.5);}
+.lcard-img{width:100%;height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;}
+.lcard-body{padding:1.2rem;}
+.pay-opt{background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:.9rem 1rem;cursor:pointer;text-align:center;transition:var(--ease);}
+.pay-opt:hover{border-color:var(--accent);}
+.pay-opt.selected{border-color:var(--accent);background:rgba(0,229,184,.08);}
+.upi-opt{background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:.6rem;cursor:pointer;font-size:.82rem;font-weight:600;text-align:center;transition:var(--ease);}
+.upi-opt.selected{border-color:var(--accent3);background:rgba(124,92,252,.1);color:#a78bfa;}
+.track-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.9rem;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block;}
+.dot-green{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.dot-yellow{background:#fbbf24;box-shadow:0 0 8px #fbbf24;}
+.empty{text-align:center;padding:3rem 1.5rem;color:var(--muted);}
+.cost-box{background:rgba(0,229,184,.05);border:1px solid rgba(0,229,184,.18);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1.1rem;}
+.ctx-bar{background:rgba(0,229,184,.06);border:1px solid rgba(0,229,184,.15);border-radius:10px;padding:.72rem 1rem;margin-bottom:1.3rem;font-size:.83rem;color:var(--accent);}
+.bitem{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.9rem;}
+.receipt-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
+@media print{body{background:#fff;color:#111;}.navbar,.no-print{display:none!important;}.receipt-box{box-shadow:none!important;border:1px solid #ccc!important;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .4s ease both;}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
+
+<nav class="navbar">
+  <div class="logo" onclick="goHome()" style="cursor:pointer;">Smart<span>Vehi</span></div>
+  <div class="nav-r" id="navRight">
+    <button class="nbtn" onclick="goHome()">← Home</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ═══════════════ LANDING ═══════════════ -->
+<div class="page center active fu" id="page-landing">
+  <div style="text-align:center;">
+    <div style="display:inline-block;background:rgba(0,229,184,.1);border:1px solid rgba(0,229,184,.25);color:var(--accent);padding:.32rem 1rem;border-radius:999px;font-size:.76rem;font-weight:700;letter-spacing:.08em;margin-bottom:1.4rem;">🚗 SMART VEHICLE PLATFORM — BCA PROJECT 2026</div>
+    <h1 style="font-size:clamp(2rem,6vw,3.8rem);font-weight:800;line-height:1.1;margin-bottom:1rem;">Your Vehicle Services,<br><span style="color:var(--accent)">All In One Place</span></h1>
+    <p style="color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 2.8rem;line-height:1.7;">Parking · Washing · Rental — with digital payments, receipts &amp; live tracking.</p>
+    <div style="display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center;">
+      <div onclick="showPage('page-service','provider')" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:2.4rem 2rem;width:245px;cursor:pointer;text-align:center;transition:var(--ease);"
+           onmouseenter="this.style.borderColor='rgba(255,95,31,.5)';this.style.transform='translateY(-6px)'"
+           onmouseleave="this.style.borderColor='';this.style.transform=''">
+        <div style="font-size:2.8rem;margin-bottom:1rem;">🏢</div>
+        <h3 style="font-size:1.2rem;margin-bottom:.5rem;">Service Provider</h3>
+        <p style="color:var(--muted);font-size:.85rem;line-height:1.6;">List services, track vehicles, manage bookings &amp; earnings.</p>
+        <span class="badge" style="margin-top:1rem;background:rgba(255,95,31,.12);color:var(--accent2);border:1px solid rgba(255,95,31,.2);">LIST &amp; EARN</span>
+      </div>
+      <div onclick="showPage('page-service','receiver')" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:2.4rem 2rem;width:245px;cursor:pointer;text-align:center;transition:var(--ease);"
+           onmouseenter="this.style.borderColor='rgba(0,229,184,.5)';this.style.transform='translateY(-6px)'"
+           onmouseleave="this.style.borderColor='';this.style.transform=''">
+        <div style="font-size:2.8rem;margin-bottom:1rem;">🙋</div>
+        <h3 style="font-size:1.2rem;margin-bottom:.5rem;">Service Receiver</h3>
+        <p style="color:var(--muted);font-size:.85rem;line-height:1.6;">Find, book, pay digitally &amp; get instant receipts.</p>
+        <span class="badge badge-washing" style="margin-top:1rem;">FIND &amp; BOOK</span>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:.8rem;margin-top:2rem;">⚡ This is an interactive demo. For full PHP+MySQL version, deploy on XAMPP.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ SERVICE SELECT ═══════════════ -->
+<div class="page center fu" id="page-service">
+  <div style="text-align:center;">
+    <span class="badge" id="svc-role-badge" style="margin-bottom:1rem;display:inline-block;font-size:.78rem;padding:.3rem .9rem;"></span>
+    <h2 id="svc-heading" style="font-size:1.9rem;font-weight:800;margin-bottom:.5rem;"></h2>
+    <p id="svc-sub" style="color:var(--muted);margin-bottom:2.5rem;"></p>
+    <div style="display:flex;gap:1.3rem;flex-wrap:wrap;justify-content:center;">
+      <div onclick="selectService('parking')" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:2rem 1.6rem;width:210px;cursor:pointer;text-align:center;transition:var(--ease);" onmouseenter="this.style.borderColor='var(--accent)';this.style.transform='translateY(-5px)'" onmouseleave="this.style.borderColor='';this.style.transform=''">
+        <div style="font-size:2.6rem;margin-bottom:.9rem;">🅿️</div><h3 style="font-size:1rem;margin-bottom:.35rem;">Parking</h3>
+        <p style="color:var(--muted);font-size:.8rem;line-height:1.55;" id="p-parking-desc"></p>
+      </div>
+      <div onclick="selectService('washing')" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:2rem 1.6rem;width:210px;cursor:pointer;text-align:center;transition:var(--ease);" onmouseenter="this.style.borderColor='var(--accent)';this.style.transform='translateY(-5px)'" onmouseleave="this.style.borderColor='';this.style.transform=''">
+        <div style="font-size:2.6rem;margin-bottom:.9rem;">🚿</div><h3 style="font-size:1rem;margin-bottom:.35rem;">Car Washing</h3>
+        <p style="color:var(--muted);font-size:.8rem;line-height:1.55;" id="p-washing-desc"></p>
+      </div>
+      <div onclick="selectService('rental')" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:2rem 1.6rem;width:210px;cursor:pointer;text-align:center;transition:var(--ease);" onmouseenter="this.style.borderColor='var(--accent)';this.style.transform='translateY(-5px)'" onmouseleave="this.style.borderColor='';this.style.transform=''">
+        <div style="font-size:2.6rem;margin-bottom:.9rem;">🚗</div><h3 style="font-size:1rem;margin-bottom:.35rem;">Vehicle Rental</h3>
+        <p style="color:var(--muted);font-size:.8rem;line-height:1.55;" id="p-rental-desc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ BROWSE (RECEIVER) ═══════════════ -->
+<div class="page fu" id="page-browse">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+      <div><h2 id="browse-heading" style="font-size:1.75rem;font-weight:800;"></h2>
+        <div style="color:var(--muted);font-size:.87rem;margin-top:.2rem;">Browse &amp; book services near you</div>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;">
+        <button class="nbtn" onclick="showPage('page-mybookings')">📅 My Bookings</button>
+        <button class="nbtn" onclick="showPage('page-service',appState.role)">Change Service</button>
+      </div>
+    </div>
+    <div class="grid3" id="listings-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ BOOK (RECEIVER) ═══════════════ -->
+<div class="page fu" id="page-book">
+  <div class="container" style="max-width:520px;">
+    <div id="book-listing-info" class="card-sm" style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;"></div>
+    <div class="card">
+      <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.3rem;">Book Service</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin-bottom:1.3rem;">Fill details, choose payment &amp; confirm.</p>
+      <div id="book-error" class="alert alert-error" style="display:none;"></div>
+      <div class="form-row">
+        <div class="fg"><label>Your Name *</label><input type="text" id="b-name"></div>
+        <div class="fg"><label>Phone *</label><input type="tel" id="b-phone"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Booking Date *</label><input type="date" id="b-date"></div>
+        <div class="fg"><label>Duration *</label>
+          <select id="b-dur" onchange="updBookCost()">
+            <option>1 Hour</option><option>3 Hours</option><option>6 Hours</option>
+            <option selected>1 Day</option><option>3 Days</option><option>1 Week</option>
+          </select>
+        </div>
+      </div>
+      <div id="pickup-wrap" style="display:none;margin-bottom:1.1rem;">
+        <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer;font-size:.88rem;">
+          <input type="checkbox" id="b-pickup" onchange="updBookCost()" style="width:auto;">
+          <span id="pickup-label">Add Pickup &amp; Drop service</span>
+        </label>
+      </div>
+      <div class="fg"><label>Special Requests</label><textarea id="b-notes" placeholder="Any instructions…"></textarea></div>
+      <div class="cost-box">
+        <div style="font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Estimated Total</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--accent);" id="b-cost-display">₹0</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.3rem;" id="b-cost-break"></div>
+      </div>
+      <!-- Payment mode -->
+      <div style="margin-bottom:1.2rem;">
+        <label style="display:block;font-size:.74rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.7rem;">Payment Mode *</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+          <div class="pay-opt" onclick="selPay(this,'credit_card')"><div style="font-size:1.6rem;margin-bottom:.3rem;">💳</div><div style="font-size:.8rem;font-weight:600;">Credit Card</div></div>
+          <div class="pay-opt" onclick="selPay(this,'debit_card')"><div style="font-size:1.6rem;margin-bottom:.3rem;">🏧</div><div style="font-size:.8rem;font-weight:600;">Debit Card</div></div>
+          <div class="pay-opt" onclick="selPay(this,'upi')"><div style="font-size:1.6rem;margin-bottom:.3rem;">📲</div><div style="font-size:.8rem;font-weight:600;">UPI</div></div>
+          <div class="pay-opt" onclick="selPay(this,'cash')"><div style="font-size:1.6rem;margin-bottom:.3rem;">💵</div><div style="font-size:.8rem;font-weight:600;">Cash on Delivery</div></div>
+        </div>
+        <div id="upi-section" style="display:none;margin-top:.9rem;">
+          <label style="display:block;font-size:.74rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;">Choose UPI App</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+            <div class="upi-opt" onclick="selUpi(this,'GPay')">💚 Google Pay</div>
+            <div class="upi-opt" onclick="selUpi(this,'PhonePe')">💜 PhonePe</div>
+            <div class="upi-opt" onclick="selUpi(this,'Paytm')">💙 Paytm</div>
+            <div class="upi-opt" onclick="selUpi(this,'BHIM')">🇮🇳 BHIM UPI</div>
+          </div>
+        </div>
+        <div id="card-hint" style="display:none;margin-top:.9rem;" class="alert alert-warn">💳 Card payment collected at time of service.</div>
+        <div id="cash-hint" style="display:none;margin-top:.9rem;" class="alert alert-warn">💵 Pay cash directly to provider on arrival.</div>
+      </div>
+      <button onclick="confirmBook()" class="btn btn-primary btn-block">✓ Confirm &amp; Pay</button>
+      <button onclick="showPage('page-browse')" class="btn btn-outline btn-block" style="margin-top:.8rem;">← Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ RECEIPT ═══════════════ -->
+<div class="page fu" id="page-receipt">
+  <div class="container" style="max-width:560px;">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;" class="no-print">
+      <button onclick="showPage('page-mybookings')" class="nbtn">← My Bookings</button>
+      <button onclick="window.print()" class="btn btn-primary btn-sm">🖨️ Print Receipt</button>
+    </div>
+    <div class="receipt-box" id="receipt-content"></div>
+    <div style="display:flex;gap:.8rem;margin-top:1.3rem;flex-wrap:wrap;" class="no-print">
+      <button onclick="showPage('page-browse')" class="btn btn-outline">← Browse More</button>
+      <button onclick="window.print()" class="btn btn-primary">🖨️ Print Receipt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MY BOOKINGS ═══════════════ -->
+<div class="page fu" id="page-mybookings">
+  <div class="container" style="max-width:900px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+      <h2 style="font-size:1.75rem;font-weight:800;">📅 My Bookings</h2>
+      <button onclick="showPage('page-browse')" class="nbtn">← Browse Services</button>
+    </div>
+    <div id="mybookings-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PROVIDER DASHBOARD ═══════════════ -->
+<div class="page fu" id="page-provider">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+      <div><h2 id="prov-heading" style="font-size:1.75rem;font-weight:800;"></h2>
+        <div style="color:var(--muted);font-size:.87rem;margin-top:.2rem;" id="prov-sub"></div>
+      </div>
+      <button class="nbtn" onclick="showPage('page-service','provider')">Change Service</button>
+    </div>
+    <div class="stats" id="prov-stats"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="provTab(this,'add')">➕ Add Listing</button>
+      <button class="tab" onclick="provTab(this,'my')">📋 My Listings</button>
+      <button class="tab" onclick="provTab(this,'bookings')">📅 Bookings</button>
+      <button class="tab" onclick="provTab(this,'tracking')">📡 Vehicle Tracking</button>
+    </div>
+    <div id="prov-tab-content"></div>
+  </div>
+</div>
+
+</div><!-- /.wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  APP STATE & LOCAL STORAGE
+// ═══════════════════════════════════════════════════════════
+const appState={role:'',service:'parking',selPay:'',selUpi:'',bookListing:null,currentReceiptId:null};
+const ICONS={parking:'🅿️',washing:'🚿',rental:'🚗'};
+const DURATION_COSTS=(l,dur)=>{
+  const H=parseFloat(l.price_hour||l.price_basic||l.rent_hour||0);
+  const D=parseFloat(l.price_day||l.price_full||l.rent_day||0);
+  return({'1 Hour':H,'3 Hours':H*3,'6 Hours':H*6,'1 Day':D,'3 Days':D*3,'1 Week':D*7}[dur])||H;
+};
+function ls(k,v){if(v===undefined)try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null};localStorage.setItem(k,JSON.stringify(v));}
+function getListings(){return ls('sv_listings')||[];}
+function getBookings(){return ls('sv_bookings')||[];}
+function genId(){return 'SV-'+Math.random().toString(36).substr(2,8).toUpperCase();}
+function fmtMoney(n){return '₹'+parseFloat(n).toFixed(2);}
+function payLabel(mode,app){return{'credit_card':'💳 Credit Card','debit_card':'🏧 Debit Card','upi':'📲 UPI'+(app?' ('+app+')'):'','cash':'💵 Cash on Delivery'}[mode]||mode;}
+
+// Seed demo data
+function seedDemo(){
+  if(ls('sv_seeded')) return;
+  ls('sv_listings',[
+    {id:genId(),type:'parking',name:'City Center Parking Zone A',location:'Anna Nagar, Chennai',desc:'Covered 24/7 CCTV parking.',image:'',price_hour:30,price_day:200,total_slots:20,vehicle_type:'Both',late_fee_hour:50,is_taken:false,taken_at:null,return_due:null},
+    {id:genId(),type:'washing',name:'SparkleWash Center',location:'T. Nagar, Chennai',desc:'Eco-friendly professional washing.',image:'',price_basic:150,price_full:450,services_offered:'Exterior wash, Interior vacuum, Waxing',pickup_drop_fee:120},
+    {id:genId(),type:'rental',name:'City Ride Rentals',location:'Adyar, Chennai',desc:'Well-maintained vehicles with GPS.',image:'',rental_type:'2-Wheeler (Bike/Scooter)',vehicle_model:'Honda Activa 6G',rent_hour:80,rent_day:500,fuel_type:'Petrol',late_fee_rental:100,is_taken:false,taken_at:null,return_due:null},
+  ]);
+  ls('sv_seeded',true);
+}
+seedDemo();
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function showPage(id, param){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');});
+  const pg=document.getElementById(id);
+  if(pg){pg.classList.add('active');}
+  if(param) appState.role=param;
+  updateNav();
+  if(id==='page-service') renderServicePage();
+  if(id==='page-browse') renderBrowse();
+  if(id==='page-provider') renderProvider('add');
+  if(id==='page-mybookings') renderMyBookings();
+  window.scrollTo(0,0);
+}
+function goHome(){showPage('page-landing');}
+function updateNav(){
+  const nr=document.getElementById('navRight');
+  const role=appState.role;
+  if(role==='receiver'){
+    nr.innerHTML=`<button class="nbtn" onclick="showPage('page-mybookings')">📅 My Bookings</button>
+                  <button class="nbtn" onclick="goHome()">Logout</button>`;
+  } else if(role==='provider'){
+    nr.innerHTML=`<button class="nbtn" onclick="goHome()">Logout</button>`;
+  } else {
+    nr.innerHTML=`<button class="nbtn" onclick="goHome()">← Home</button>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SERVICE PAGE
+// ═══════════════════════════════════════════════════════════
+function renderServicePage(){
+  const isP=appState.role==='provider';
+  document.getElementById('svc-role-badge').textContent=isP?'🏢 SERVICE PROVIDER':'🙋 SERVICE RECEIVER';
+  document.getElementById('svc-heading').textContent=isP?'What service do you offer?':'What are you looking for?';
+  document.getElementById('svc-sub').textContent=isP?'Choose a category to list your service.':'Select a service to browse and book.';
+  const descs={parking:[isP?'List parking zones with slots & pricing.':'Find & book parking near you.',isP?'Register your washing center.':'Book a wash with pickup & drop option.',isP?'Add vehicles for rent.':'Browse & rent vehicles.']};
+  document.getElementById('p-parking-desc').textContent=isP?'List parking zones with slots & pricing.':'Find & book parking near you.';
+  document.getElementById('p-washing-desc').textContent=isP?'Register your washing center.':'Book a wash with optional pickup & drop.';
+  document.getElementById('p-rental-desc').textContent=isP?'Add vehicles for rent with tracking.':'Browse & rent vehicles instantly.';
+}
+function selectService(svc){
+  appState.service=svc;
+  if(appState.role==='provider') showPage('page-provider');
+  else showPage('page-browse');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BROWSE
+// ═══════════════════════════════════════════════════════════
+function renderBrowse(){
+  const svc=appState.service;
+  document.getElementById('browse-heading').textContent=ICONS[svc]+' Find '+svc.charAt(0).toUpperCase()+svc.slice(1);
+  const listings=getListings().filter(l=>l.type===svc);
+  const grid=document.getElementById('listings-grid');
+  if(!listings.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><div style="font-size:2.5rem;margin-bottom:.8rem;">🔍</div><p>No '+svc+' services yet.</p></div>';return;}
+  grid.innerHTML=listings.map(l=>{
+    const price=l.type==='parking'?fmtMoney(l.price_hour)+'/hr · '+fmtMoney(l.price_day)+'/day':l.type==='washing'?'Basic: '+fmtMoney(l.price_basic)+' · Full: '+fmtMoney(l.price_full):fmtMoney(l.rent_hour)+'/hr · '+fmtMoney(l.rent_day)+'/day';
+    const extra=l.type==='parking'?(l.total_slots||'?')+' slots · '+(l.vehicle_type||''):l.type==='washing'?(l.services_offered||''):(l.rental_type||'')+' · '+(l.vehicle_model||'')+' · '+(l.fuel_type||'');
+    const taken=l.is_taken&&(l.type==='parking'||l.type==='rental');
+    return `<div class="lcard">
+      <div class="lcard-img">${l.image?`<img src="${l.image}" style="width:100%;height:100%;object-fit:cover;">`:ICONS[l.type]}
+        ${taken?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:800;font-size:1.3rem;color:#f87171;">🔴 TAKEN</div>':''}
+      </div>
+      <div class="lcard-body">
+        <span class="badge badge-${l.type}">${l.type.toUpperCase()}</span>
+        <div style="font-size:.97rem;font-weight:700;margin:.45rem 0 .28rem;">${l.name}</div>
+        <div style="color:var(--muted);font-size:.79rem;margin-bottom:.42rem;">📍 ${l.location}</div>
+        <div style="font-size:.76rem;color:var(--muted);margin-bottom:.45rem;">${extra}</div>
+        <div style="color:var(--accent);font-weight:700;font-size:.92rem;margin-bottom:.9rem;">${price}</div>
+        <div style="display:flex;gap:.45rem;">
+          ${!taken?`<button onclick="startBook('${l.id}')" style="flex:1;padding:.48rem .4rem;background:var(--accent);color:#000;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;">Book Now</button>`
+          :`<span style="flex:1;padding:.48rem .4rem;background:rgba(239,68,68,.1);color:#f87171;border-radius:8px;text-align:center;font-size:.82rem;">Unavailable</span>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BOOKING
+// ═══════════════════════════════════════════════════════════
+function startBook(lid){
+  const l=getListings().find(x=>x.id===lid);
+  if(!l) return;
+  appState.bookListing=l;
+  appState.selPay='';appState.selUpi='';
+  showPage('page-book');
+  document.getElementById('b-date').min=new Date().toISOString().split('T')[0];
+  document.getElementById('b-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('book-error').style.display='none';
+  // Listing info
+  document.getElementById('book-listing-info').innerHTML=`
+    <div style="font-size:2.3rem;flex-shrink:0;">${ICONS[l.type]}</div>
+    <div><div style="font-weight:700;font-size:.97rem;">${l.name}</div>
+    <div style="color:var(--muted);font-size:.79rem;">📍 ${l.location}</div></div>`;
+  // Pickup/drop for washing
+  const pw=document.getElementById('pickup-wrap');
+  if(l.type==='washing'){pw.style.display='block';document.getElementById('pickup-label').textContent='Add Pickup & Drop service (+'+fmtMoney(l.pickup_drop_fee||0)+')';}
+  else pw.style.display='none';
+  document.querySelectorAll('.pay-opt').forEach(e=>{e.style.borderColor='var(--border)';e.style.background='var(--surface2)';e.classList.remove('selected');});
+  document.getElementById('upi-section').style.display='none';
+  document.getElementById('card-hint').style.display='none';
+  document.getElementById('cash-hint').style.display='none';
+  updBookCost();
+}
+function updBookCost(){
+  const l=appState.bookListing; if(!l) return;
+  const dur=document.getElementById('b-dur').value;
+  let base=DURATION_COSTS(l,dur);
+  let extra=0;
+  const pd=document.getElementById('b-pickup');
+  if(pd&&pd.checked&&l.type==='washing') extra=parseFloat(l.pickup_drop_fee||0);
+  const total=base+extra;
+  document.getElementById('b-cost-display').textContent=fmtMoney(total);
+  document.getElementById('b-cost-break').textContent='Base: '+fmtMoney(base)+(extra?' + Pickup/Drop: '+fmtMoney(extra):'');
+}
+function selPay(el,mode){
+  document.querySelectorAll('.pay-opt').forEach(e=>{e.style.borderColor='var(--border)';e.style.background='var(--surface2)';e.classList.remove('selected');});
+  el.style.borderColor='var(--accent)';el.style.background='rgba(0,229,184,.08)';el.classList.add('selected');
+  appState.selPay=mode;
+  document.getElementById('upi-section').style.display=mode==='upi'?'block':'none';
+  document.getElementById('card-hint').style.display=(mode==='credit_card'||mode==='debit_card')?'block':'none';
+  document.getElementById('cash-hint').style.display=mode==='cash'?'block':'none';
+}
+function selUpi(el,app){
+  document.querySelectorAll('.upi-opt').forEach(e=>{e.style.borderColor='var(--border)';e.style.background='var(--surface2)';e.style.color='';e.classList.remove('selected');});
+  el.style.borderColor='var(--accent3)';el.style.background='rgba(124,92,252,.1)';el.style.color='#a78bfa';el.classList.add('selected');
+  appState.selUpi=app;
+}
+function confirmBook(){
+  const l=appState.bookListing;
+  const name=document.getElementById('b-name').value.trim();
+  const phone=document.getElementById('b-phone').value.trim();
+  const date=document.getElementById('b-date').value;
+  const dur=document.getElementById('b-dur').value;
+  const notes=document.getElementById('b-notes').value.trim();
+  const errEl=document.getElementById('book-error');
+  if(!name||!phone||!date||!dur||!appState.selPay){errEl.textContent='⚠️ Please fill all fields and select a payment mode.';errEl.style.display='block';return;}
+  if(appState.selPay==='upi'&&!appState.selUpi){errEl.textContent='⚠️ Please select a UPI app.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  let base=DURATION_COSTS(l,dur);
+  const pd=document.getElementById('b-pickup');
+  let pdEnabled=pd&&pd.checked&&l.type==='washing';
+  let extra=pdEnabled?parseFloat(l.pickup_drop_fee||0):0;
+  const cost=base+extra;
+  const booking={id:genId(),listing_id:l.id,listing_name:l.name,listing_loc:l.location,listing_type:l.type,
+    listing_image:l.image||'',vehicle_model:l.vehicle_model||'',rental_type:l.rental_type||'',fuel_type:l.fuel_type||'',
+    customer_name:name,customer_phone:phone,booking_date:date,duration:dur,notes,cost:base,extra_charges:0,
+    payment_mode:appState.selPay,upi_app:appState.selUpi,pickup_drop:pdEnabled,receipt_no:genId(),
+    status:'confirmed',payment_status:'paid',created_at:new Date().toISOString()};
+  const bookings=getBookings(); bookings.push(booking); ls('sv_bookings',bookings);
+  appState.currentReceiptId=booking.id;
+  renderReceipt(booking);
+  showPage('page-receipt');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RECEIPT
+// ═══════════════════════════════════════════════════════════
+function renderReceipt(b){
+  const total=parseFloat(b.cost)+parseFloat(b.extra_charges||0);
+  const icons={parking:'🅿️',washing:'🚿',rental:'🚗'};
+  document.getElementById('receipt-content').innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--accent),var(--accent3));padding:1.8rem 2rem;color:#000;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+        <div><h2 style="font-family:Syne,sans-serif;font-weight:800;font-size:1.6rem;color:#000;">SmartVehi</h2>
+          <p style="font-size:.82rem;opacity:.75;">Smart Vehicle Service Platform</p></div>
+        <div style="text-align:right;">
+          <div style="font-size:.72rem;opacity:.7;font-weight:600;letter-spacing:.05em;">RECEIPT</div>
+          <div style="font-size:1.2rem;font-weight:800;">${b.receipt_no}</div>
+          <div style="font-size:.78rem;opacity:.75;">${new Date(b.created_at).toLocaleString()}</div>
+        </div>
+      </div>
+    </div>
+    ${b.listing_image?`<div style="width:100%;height:${b.listing_type==='rental'?'200':'140'}px;overflow:hidden;"><img src="${b.listing_image}" style="width:100%;height:100%;object-fit:cover;"></div>`:''}
+    <div style="padding:1.6rem 2rem;">
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.3rem;padding-bottom:1.3rem;border-bottom:1px solid var(--border);">
+        <div style="font-size:2.5rem;">${icons[b.listing_type]}</div>
+        <div><div style="font-weight:700;font-size:1.05rem;">${b.listing_name}</div>
+          <div style="color:var(--muted);font-size:.82rem;">📍 ${b.listing_loc}</div>
+          <div style="margin-top:.3rem;"><span class="badge badge-${b.listing_type}">${b.listing_type.toUpperCase()}</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.3rem;">
+        <div><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;">Customer</div>
+          <div style="font-weight:600;font-size:.9rem;">${b.customer_name}</div>
+          <div style="color:var(--muted);font-size:.8rem;">${b.customer_phone}</div></div>
+        <div><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;">Booking Date</div>
+          <div style="font-weight:600;font-size:.9rem;">${new Date(b.booking_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div></div>
+        <div><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;">Duration</div>
+          <div style="font-weight:600;font-size:.9rem;">${b.duration}</div></div>
+        ${b.listing_type==='rental'?`<div><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;">Vehicle</div>
+          <div style="font-weight:600;font-size:.9rem;">${b.vehicle_model}</div>
+          <div style="color:var(--muted);font-size:.8rem;">${b.rental_type} · ${b.fuel_type}</div></div>`:''}
+        ${b.pickup_drop?`<div><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem;">Pickup & Drop</div><div style="font-weight:600;color:var(--accent);">✅ Included</div></div>`:''}
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.3rem;">
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;">Payment Summary</div>
+        <div style="display:flex;justify-content:space-between;font-size:.87rem;margin-bottom:.35rem;"><span style="color:var(--muted);">Base Cost</span><span>${fmtMoney(b.cost)}</span></div>
+        ${b.extra_charges>0?`<div style="display:flex;justify-content:space-between;font-size:.87rem;margin-bottom:.35rem;"><span style="color:#fca5a5;">Extra Charges</span><span style="color:#fca5a5;">+${fmtMoney(b.extra_charges)}</span></div>`:''}
+        <div style="height:1px;background:var(--border);margin:.6rem 0;"></div>
+        <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;"><span>Total</span><span style="color:var(--accent);">${fmtMoney(total)}</span></div>
+        <div style="margin-top:.6rem;font-size:.82rem;color:var(--muted);">${payLabel(b.payment_mode,b.upi_app)} <span style="margin-left:.7rem;color:var(--accent);">✅ Paid</span></div>
+      </div>
+      ${b.notes?`<div style="margin-bottom:1.3rem;"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Special Requests</div><div style="font-size:.87rem;color:var(--muted);font-style:italic;">"${b.notes}"</div></div>`:''}
+      <div style="text-align:center;padding:1rem;background:rgba(0,229,184,.06);border:1px solid rgba(0,229,184,.15);border-radius:10px;">
+        <div style="font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem;">Booking Status</div>
+        <span class="badge badge-confirmed" style="font-size:.82rem;padding:.3rem .9rem;">CONFIRMED</span>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.6rem;">Show this receipt to avail your service.</div>
+      </div>
+      <div style="text-align:center;padding-top:1.2rem;margin-top:1.2rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted);">
+        SmartVehi · BCA Project 2026 · Priya.T (23IABCA120)<br>
+        Receipt: ${b.receipt_no} · ${new Date().toLocaleString()}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MY BOOKINGS
+// ═══════════════════════════════════════════════════════════
+function renderMyBookings(){
+  const bk=getBookings();
+  const el=document.getElementById('mybookings-list');
+  if(!bk.length){el.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:.8rem;">📅</div><p>No bookings yet.</p></div>';return;}
+  el.innerHTML=bk.slice().reverse().map(b=>{
+    const total=parseFloat(b.cost)+parseFloat(b.extra_charges||0);
+    return `<div class="bitem">
+      <div style="display:flex;gap:1rem;align-items:center;flex:1;">
+        <div style="font-size:2rem;flex-shrink:0;">${ICONS[b.listing_type]}</div>
+        <div>
+          <h4 style="font-size:.93rem;font-weight:700;margin-bottom:.25rem;">${b.listing_name}</h4>
+          <p style="color:var(--muted);font-size:.79rem;line-height:1.55;">📍 ${b.listing_loc}</p>
+          <p style="color:var(--muted);font-size:.79rem;">📅 ${b.booking_date} · ⏱ ${b.duration}</p>
+          <p style="color:var(--muted);font-size:.79rem;">${payLabel(b.payment_mode,b.upi_app)} · 🧾 ${b.receipt_no}</p>
+          ${b.pickup_drop?'<p style="color:var(--accent);font-size:.78rem;">✅ Pickup & Drop included</p>':''}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <span class="badge badge-confirmed">${b.status.toUpperCase()}</span>
+        <div style="color:var(--accent);font-weight:800;font-size:1.05rem;margin-top:.4rem;">${fmtMoney(total)}</div>
+        <div style="color:var(--muted);font-size:.72rem;">✅ Paid</div>
+        <button onclick="viewReceipt('${b.id}')" class="btn btn-primary btn-sm" style="margin-top:.5rem;">🧾 Receipt</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function viewReceipt(bid){
+  const b=getBookings().find(x=>x.id===bid);
+  if(!b) return;
+  renderReceipt(b);
+  showPage('page-receipt');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROVIDER DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderProvider(tab){
+  const svc=appState.service;
+  document.getElementById('prov-heading').textContent=ICONS[svc]+' Provider Dashboard';
+  document.getElementById('prov-sub').textContent=svc.charAt(0).toUpperCase()+svc.slice(1)+' Provider';
+  const listings=getListings();
+  const bookings=getBookings();
+  const myListings=listings.filter(l=>l.type===svc);
+  const earn=bookings.reduce((s,b)=>s+parseFloat(b.cost||0)+parseFloat(b.extra_charges||0),0);
+  document.getElementById('prov-stats').innerHTML=`
+    <div class="stat"><div class="stat-num" style="color:var(--accent)">${myListings.length}</div><div class="stat-lbl">Listings</div></div>
+    <div class="stat"><div class="stat-num" style="color:#a78bfa">${bookings.length}</div><div class="stat-lbl">Bookings</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--accent2)">₹${Math.round(earn).toLocaleString()}</div><div class="stat-lbl">Earnings</div></div>`;
+  provTab(null, tab);
+}
+function provTab(btn, tab){
+  if(btn){document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');});btn.classList.add('active');}
+  const svc=appState.service;
+  const content=document.getElementById('prov-tab-content');
+  if(tab==='add'){
+    const parkFields=`<div class="form-row"><div class="fg"><label>Price/Hour (₹)</label><input type="number" id="f-ph" placeholder="30" min="0"></div><div class="fg"><label>Price/Day (₹)</label><input type="number" id="f-pd" placeholder="200" min="0"></div></div>
+      <div class="form-row"><div class="fg"><label>Total Slots</label><input type="number" id="f-slots" placeholder="20" min="1"></div>
+      <div class="fg"><label>Vehicle Type</label><select id="f-vt"><option>2-Wheeler</option><option>4-Wheeler</option><option selected>Both</option></select></div></div>
+      <div class="fg"><label>Late Fee/Hour (₹)</label><input type="number" id="f-latef" placeholder="50" min="0" value="50"></div>`;
+    const washFields=`<div class="form-row"><div class="fg"><label>Basic Price (₹)</label><input type="number" id="f-pb" placeholder="150" min="0"></div><div class="fg"><label>Full Service (₹)</label><input type="number" id="f-pf" placeholder="450" min="0"></div></div>
+      <div class="fg"><label>Services Offered</label><input type="text" id="f-svo" placeholder="Exterior wash, Interior vacuum…"></div>
+      <div class="fg"><label>Pickup & Drop Fee (₹)</label><input type="number" id="f-pdf" placeholder="100" min="0" value="100"></div>`;
+    const rentFields=`<div class="form-row"><div class="fg"><label>Vehicle Category</label><select id="f-rt"><option>2-Wheeler (Bike/Scooter)</option><option>3-Wheeler (Auto)</option><option>4-Wheeler (Car)</option></select></div>
+      <div class="fg"><label>Vehicle Model</label><input type="text" id="f-vm" placeholder="Honda Activa 6G"></div></div>
+      <div class="form-row"><div class="fg"><label>Rent/Hour (₹)</label><input type="number" id="f-rh" placeholder="80" min="0"></div><div class="fg"><label>Rent/Day (₹)</label><input type="number" id="f-rd" placeholder="500" min="0"></div></div>
+      <div class="form-row"><div class="fg"><label>Fuel Type</label><select id="f-ft"><option>Petrol</option><option>Electric</option><option>Diesel</option><option>CNG</option></select></div>
+      <div class="fg"><label>Late Fee/Hour (₹)</label><input type="number" id="f-latef2" placeholder="100" min="0" value="100"></div></div>`;
+    const typeFields={parking:parkFields,washing:washFields,rental:rentFields};
+    content.innerHTML=`<div class="card"><h3 style="margin-bottom:1.4rem;font-size:1.1rem;">${ICONS[svc]} Add New Listing</h3>
+      <div class="form-row"><div class="fg"><label>Name *</label><input type="text" id="f-name" placeholder="e.g. City Center Parking Zone A"></div>
+      <div class="fg"><label>Location *</label><input type="text" id="f-loc" placeholder="e.g. Anna Nagar, Chennai"></div></div>
+      ${typeFields[svc]||''}
+      <div class="fg"><label>Description</label><textarea id="f-desc" placeholder="Describe your service…"></textarea></div>
+      <div id="add-err" class="alert alert-error" style="display:none;"></div>
+      <button onclick="addListing()" class="btn btn-primary">🚀 Publish Listing</button></div>`;
+  } else if(tab==='my'){
+    const all=getListings().filter(l=>l.type===svc);
+    if(!all.length){content.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:.8rem;">📭</div><p>No listings yet.</p></div>';return;}
+    content.innerHTML=all.map(l=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;display:flex;align-items:center;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;">
+        <div style="width:68px;height:68px;border-radius:10px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.7rem;">${ICONS[l.type]}</div>
+        <div style="flex:1;min-width:140px;">
+          <div style="font-weight:700;font-size:.93rem;margin-bottom:.22rem;">${l.name}${l.is_taken?' <span class="badge badge-taken" style="font-size:.65rem;">TAKEN</span>':''}</div>
+          <div style="color:var(--muted);font-size:.79rem;">📍 ${l.location}</div>
+        </div>
+        <button onclick="deleteListing('${l.id}')" class="btn-danger" style="background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:.42rem .88rem;font-size:.82rem;cursor:pointer;">🗑️ Delete</button>
+      </div>`).join('');
+  } else if(tab==='bookings'){
+    const bk=getBookings();
+    if(!bk.length){content.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:.8rem;">📅</div><p>No bookings yet.</p></div>';return;}
+    content.innerHTML=bk.slice().reverse().map(b=>{
+      const total=parseFloat(b.cost)+parseFloat(b.extra_charges||0);
+      return `<div class="bitem"><div class="bitem-info">
+          <h4>${ICONS[b.listing_type]} ${b.listing_name}</h4>
+          <p>👤 ${b.customer_name} · 📞 ${b.customer_phone}</p>
+          <p>📅 ${b.booking_date} · ⏱ ${b.duration}</p>
+          <p>${payLabel(b.payment_mode,b.upi_app)} · 🧾 ${b.receipt_no}</p>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge badge-confirmed">CONFIRMED</span>
+          <div style="color:var(--accent);font-weight:800;font-size:1rem;margin-top:.4rem;">${fmtMoney(total)}</div>
+          <div style="color:var(--muted);font-size:.72rem;">✅ Paid</div>
+        </div></div>`;
+    }).join('');
+  } else if(tab==='tracking'){
+    const trackable=getListings().filter(l=>l.type==='parking'||l.type==='rental');
+    if(!trackable.length){content.innerHTML='<div class="empty"><div style="font-size:2.5rem;margin-bottom:.8rem;">📡</div><p>No parking or rental listings to track.</p></div>';return;}
+    content.innerHTML=`<div class="alert alert-warn" style="margin-bottom:1.2rem;">📡 <strong>Live Tracking Panel</strong> — Mark when receiver takes vehicle. Late returns will add extra charges.</div>`+
+    trackable.map(l=>{
+      const now=Date.now();
+      const due=l.return_due?new Date(l.return_due).getTime():null;
+      const overdue=l.is_taken&&due&&now>due;
+      const hoursLate=overdue?Math.ceil((now-due)/3600000):0;
+      const lateFee=parseFloat(l.late_fee_hour||l.late_fee_rental||50);
+      const extraEst=overdue?hoursLate*lateFee:0;
+      return `<div class="track-card ${overdue?'overdue-banner':''}">
+        <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;flex-wrap:wrap;">
+          <div class="status-dot ${l.is_taken?(overdue?'dot-red':'dot-yellow'):'dot-green'}"></div>
+          <strong>${l.name}</strong>
+          <span class="badge ${l.is_taken?(overdue?'badge-overdue':'badge-taken'):'badge-confirmed'}">
+            ${l.is_taken?(overdue?'⚠️ OVERDUE':'🟡 TAKEN'):'🟢 AVAILABLE'}</span>
+          <span class="badge badge-${l.type}">${l.type.toUpperCase()}</span>
+        </div>
+        <div style="color:var(--muted);font-size:.82rem;margin-bottom:.8rem;">
+          📍 ${l.location}
+          ${l.is_taken&&l.taken_at?` · 🕐 Taken: ${new Date(l.taken_at).toLocaleString()} · ⏰ Due: ${new Date(l.return_due).toLocaleString()}`:''}
+          ${overdue?`<br><span style="color:#fca5a5;font-weight:600;">⚠️ Overdue by ${hoursLate}hr — Est. extra: ${fmtMoney(extraEst)}</span>`:''}
+        </div>
+        ${!l.is_taken?`
+          <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;">
+            <select id="dur-${l.id}" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.42rem .8rem;color:var(--text);font-size:.84rem;">
+              <option>1 Hour</option><option>3 Hours</option><option>6 Hours</option><option selected>1 Day</option><option>3 Days</option><option>1 Week</option>
+            </select>
+            <button onclick="markTaken('${l.id}')" class="btn btn-primary btn-sm">🚦 Mark as Taken</button>
+          </div>`
+        :`<button onclick="markReturned('${l.id}')" class="btn btn-outline btn-sm">✅ Mark as Returned</button>`}
+      </div>`;
+    }).join('');
+  }
+}
+function addListing(){
+  const svc=appState.service;
+  const name=(document.getElementById('f-name')||{}).value?.trim();
+  const loc=(document.getElementById('f-loc')||{}).value?.trim();
+  if(!name||!loc){const e=document.getElementById('add-err');e.textContent='⚠️ Name and location are required.';e.style.display='block';return;}
+  const listing={id:genId(),type:svc,name,location:loc,desc:(document.getElementById('f-desc')||{}).value||'',image:'',is_taken:false,taken_at:null,return_due:null};
+  if(svc==='parking'){listing.price_hour=parseFloat((document.getElementById('f-ph')||{}).value||0);listing.price_day=parseFloat((document.getElementById('f-pd')||{}).value||0);listing.total_slots=parseInt((document.getElementById('f-slots')||{}).value||0);listing.vehicle_type=(document.getElementById('f-vt')||{}).value||'Both';listing.late_fee_hour=parseFloat((document.getElementById('f-latef')||{}).value||50);}
+  else if(svc==='washing'){listing.price_basic=parseFloat((document.getElementById('f-pb')||{}).value||0);listing.price_full=parseFloat((document.getElementById('f-pf')||{}).value||0);listing.services_offered=(document.getElementById('f-svo')||{}).value||'';listing.pickup_drop_fee=parseFloat((document.getElementById('f-pdf')||{}).value||100);}
+  else{listing.rental_type=(document.getElementById('f-rt')||{}).value||'';listing.vehicle_model=(document.getElementById('f-vm')||{}).value||'';listing.rent_hour=parseFloat((document.getElementById('f-rh')||{}).value||0);listing.rent_day=parseFloat((document.getElementById('f-rd')||{}).value||0);listing.fuel_type=(document.getElementById('f-ft')||{}).value||'Petrol';listing.late_fee_rental=parseFloat((document.getElementById('f-latef2')||{}).value||100);}
+  const all=getListings(); all.push(listing); ls('sv_listings',all);
+  renderProvider('my');
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',i===1);});
+}
+function deleteListing(id){
+  if(!confirm('Delete this listing?')) return;
+  ls('sv_listings',getListings().filter(l=>l.id!==id));
+  renderProvider('my');
+}
+function markTaken(id){
+  const dur=document.getElementById('dur-'+id)?.value||'1 Day';
+  const hrs={'1 Hour':1,'3 Hours':3,'6 Hours':6,'1 Day':24,'3 Days':72,'1 Week':168};
+  const h=hrs[dur]||24;
+  const now=new Date(); const due=new Date(now.getTime()+h*3600000);
+  const all=getListings().map(l=>l.id===id?{...l,is_taken:true,taken_at:now.toISOString(),return_due:due.toISOString()}:l);
+  ls('sv_listings',all);
+  renderProvider('tracking');
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',i===3);});
+}
+function markReturned(id){
+  if(!confirm('Mark as returned? Extra charges calculated if overdue.')) return;
+  const l=getListings().find(x=>x.id===id);
+  let extra=0;
+  if(l&&l.return_due&&Date.now()>new Date(l.return_due).getTime()){
+    const hoursLate=Math.ceil((Date.now()-new Date(l.return_due).getTime())/3600000);
+    extra=hoursLate*parseFloat(l.late_fee_hour||l.late_fee_rental||50);
+  }
+  const all=getListings().map(x=>x.id===id?{...x,is_taken:false,taken_at:null,return_due:null}:x);
+  ls('sv_listings',all);
+  if(extra>0) alert('⚠️ Late return fee: '+fmtMoney(extra)+' has been added to the booking.');
+  renderProvider('tracking');
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',i===3);});
+}
+</script>
+</body>
+</html>
